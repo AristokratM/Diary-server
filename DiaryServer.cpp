@@ -45,10 +45,12 @@ void DiaryServer::jsonReceived(DiaryServerWorker *sender, const QJsonObject &doc
     if(action.toString() == "Login") {
         int userId = usersController->CorrectLoginAndPassword(login.toString().toStdString(), password.toString().toStdString());
         response->insert("UserId", userId);
+        response->insert("ResponseType", QString::fromStdString("Login"));
         documentResponse->setObject(*response);
     } else
     if (action.toString() == "AddUser") {
         response->insert("UserId", usersController->AddUser(login.toString().toStdString(), password.toString().toStdString()).getId());
+        response->insert("ResponseType", QString::fromStdString("AddUser"));
         documentResponse->setObject(*response);
     } else
     if (action.toString() == "AddNote") {
@@ -56,6 +58,7 @@ void DiaryServer::jsonReceived(DiaryServerWorker *sender, const QJsonObject &doc
         string text = data.value(QString::fromStdString("Text")).toString().toStdString();
         int userId = usersController->CorrectLoginAndPassword(login.toString().toStdString(), password.toString().toStdString());
         response->insert("NoteId", notesController->AddNote(title, text, userId).getId());
+        response->insert("ResponseType", QString::fromStdString("AddNote"));
         documentResponse->setObject(*response);
     } else
     if(action.toString() == "GetNote") {
@@ -64,13 +67,16 @@ void DiaryServer::jsonReceived(DiaryServerWorker *sender, const QJsonObject &doc
         response->insert("NoteId", note.getId());
         response->insert("Text", QString::fromStdString(note.getText()));
         response->insert("Title", QString::fromStdString(note.getText()));
+        response->insert("ResponseType", QString::fromStdString("GetNote"));
         documentResponse->setObject(*response);
     } else
     if(action.toString() == "GetAllUserNotes") {
         int userId = usersController->CorrectLoginAndPassword(login.toString().toStdString(), password.toString().toStdString());
         vector<Note> notes = notesController->GetAllNotesByUserId(userId);
         QJsonArray *notesArray = new QJsonArray();
-
+        QJsonObject *responseType = new QJsonObject();
+        *responseType->insert("ResponseType", QString::fromStdString("GetAllUserNotes"));
+        notesArray->append(*responseType);
         for (Note note: notes) {
             QJsonObject *noteJson = new QJsonObject();
             noteJson->insert("NoteId", note.getId());

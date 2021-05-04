@@ -66,8 +66,9 @@ void DiaryServer::jsonReceived(DiaryServerWorker *sender, const QJsonObject &doc
         response->insert("Title", QString::fromStdString(note.getText()));
         documentResponse->setObject(*response);
     } else
-    if(action.toString() == "GetAllNotes") {
-        vector<Note> notes = notesController->GetAllNotes();
+    if(action.toString() == "GetAllUserNotes") {
+        int userId = usersController->CorrectLoginAndPassword(login.toString().toStdString(), password.toString().toStdString());
+        vector<Note> notes = notesController->GetAllNotesByUserId(userId);
         QJsonArray *notesArray = new QJsonArray();
 
         for (Note note: notes) {
@@ -79,6 +80,7 @@ void DiaryServer::jsonReceived(DiaryServerWorker *sender, const QJsonObject &doc
         }
         documentResponse->setArray(*notesArray);
     }
+
     sender->sendJson(documentResponse->object());
     delete response;
     delete documentResponse;

@@ -11,6 +11,7 @@ DiaryServer::DiaryServer(IUsersController& usersController, INotesController& no
 {
     this->notesController = &notesController;
     this->usersController = &usersController;
+    this->listen(QHostAddress::Any, 5353);
 }
 void DiaryServer::incomingConnection(qintptr socketDescriptor)
 {

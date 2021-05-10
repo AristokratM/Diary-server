@@ -75,9 +75,9 @@ void DiaryServer::jsonReceived(DiaryServerWorker *sender, const QJsonObject &doc
         int userId = usersController->CorrectLoginAndPassword(login.toString().toStdString(), password.toString().toStdString());
         vector<Note> notes = notesController->GetAllNotesByUserId(userId);
         QJsonArray *notesArray = new QJsonArray();
-        QJsonObject *responseType = new QJsonObject();
-        *responseType->insert("ResponseType", QString::fromStdString("GetAllUserNotes"));
-        notesArray->append(*responseType);
+        QJsonObject *responseObject = new QJsonObject();
+        QJsonDocument *array = new QJsonDocument();
+        responseObject->insert("ResponseType", QString::fromStdString("GetAllUserNotes"));
         for (Note note: notes) {
             QJsonObject *noteJson = new QJsonObject();
             noteJson->insert("NoteId", note.getId());
@@ -85,7 +85,9 @@ void DiaryServer::jsonReceived(DiaryServerWorker *sender, const QJsonObject &doc
             noteJson->insert("Title", QString::fromStdString(note.getText()));
             notesArray->append(*noteJson);
         }
-        documentResponse->setArray(*notesArray);
+        array->setArray(*notesArray);
+        responseObject->insert("Notes", array->object());
+        documentResponse->setObject(*responseObject);
     }
 
     sender->sendJson(documentResponse->object());

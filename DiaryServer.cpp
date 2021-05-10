@@ -5,7 +5,7 @@
 #include <qjsonobject.h>
 #include <qjsonobject.h>
 #include <string>
-
+#include <iostream>
 DiaryServer::DiaryServer(IUsersController& usersController, INotesController& notesController, QObject *parent)
     :QTcpServer(parent)
 {
@@ -86,10 +86,9 @@ void DiaryServer::jsonReceived(DiaryServerWorker *sender, const QJsonObject &doc
             notesArray->append(*noteJson);
         }
         array->setArray(*notesArray);
-        responseObject->insert("Notes", array->object());
+        responseObject->insert("Notes", array->array());
         documentResponse->setObject(*responseObject);
     }
-
     sender->sendJson(documentResponse->object());
     delete response;
     delete documentResponse;

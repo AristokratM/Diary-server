@@ -82,7 +82,7 @@ void DiaryServer::jsonReceived(DiaryServerWorker *sender, const QJsonObject &doc
             QJsonObject *noteJson = new QJsonObject();
             noteJson->insert("NoteId", note.getId());
             noteJson->insert("Text", QString::fromStdString(note.getText()));
-            noteJson->insert("Title", QString::fromStdString(note.getText()));
+            noteJson->insert("Title", QString::fromStdString(note.getTitle()));
             notesArray->append(*noteJson);
         }
         array->setArray(*notesArray);
